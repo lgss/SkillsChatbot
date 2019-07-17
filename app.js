@@ -1,10 +1,11 @@
+require('dotenv').config();
 const slackbot = require('slackbots');
 const restify = require('restify');
 var request = require('request');
 var rp = require('request-promise');
 
 const bot = new slackbot({
-	token:'xoxb-492283298757-560422684000-rHtbsYu12uBmzFPJJdh3V92C',
+	token:`${SLACKTOKEN}`,
 	name:'skillbot'
 });
 
