@@ -6,24 +6,23 @@ var request = require('request');
 var rp = require('request-promise');
 
 const bot = new slackbot({
-	//token:'xoxb-492283298757-560422684000-rHtbsYu12uBmzFPJJdh3V92C',
 	token:SLACKTOKEN,
 	name:'skillbot'
 });
 
-
 bot.on('start', () => {
+	var now = new Date();
 	const params = {
 		icon_emoji: ':flag-england:'
 	}
-
-	//bot.postMessageToChannel('general', 'bot on - no touchy', params);
+	//bot.postMessageToChannel('general', 'bot on', params);
+	console.log(`Bot started @ ${now.toString()}`);
 });
 
 bot.on('error', (err) => console.log(err));
 
 bot.on('message', (data) => {
-	if(data.user == bot.user_id && data.type !== 'message'){
+	if(data.user == bot.user_id || data.type !== 'message' ){
 		return
 	}
 	handleMessage(data);
@@ -31,7 +30,6 @@ bot.on('message', (data) => {
 
 function handleMessage(data){
 	var message = data.text;
-	var channel = data.channel;
 
 	if(message.includes('add skill:')){
 		addskill(data);
@@ -42,9 +40,9 @@ function handleMessage(data){
 	} else if(message.includes('add me')){
 		addUser(data);
 	} else if(message.includes('I have learned ')){
-		addUserSkill(data)
+		addUserSkill(data);
 	} else if(message.includes('help')){
-		bot.postMessageToChannel('general', 'soz no can do');
+		respond(data.channel, 'soz no can do');
 	} else if(message.includes('what skills does')){
 		getUserSkills(message.replace('what skills does','').trim().substr(2,9));
 	}
@@ -93,12 +91,11 @@ function addUser(data){
 		json: true
 	};
 	rp(options).then(function(body){
-		respond(data.channel, `User added:`);
+		respond(data.channel, `User has been added`);
 	})
 }
 
 function addUserSkill(data){
-
 	rp('https://igotskillz.herokuapp.com/skillbyname/' + data.text.replace('I have learned','').trim()).then(function(getSkillBody){
 		skillBody = JSON.parse(getSkillBody);
 		if(skillBody.skill === null){
