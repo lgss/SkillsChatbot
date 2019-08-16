@@ -8,7 +8,7 @@ var rp = require('request-promise');
 const bot = new slackbot({
 	//token:'xoxb-492283298757-560422684000-rHtbsYu12uBmzFPJJdh3V92C',
 	token:SLACKTOKEN,
-	name:'skillbot'
+	name:process.env.SLACKNAME ? process.env.SLACKNAME : 'skillbot'
 });
 
 
@@ -26,6 +26,7 @@ bot.on('message', (data) => {
 	if(data.type !== 'message'){
 		return
 	}
+	if(data.bot_id) return;      //Ignore bots
 	handleMessage(data);
 });
 
