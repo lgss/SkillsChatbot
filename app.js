@@ -7,7 +7,6 @@ const handle = require('./handle.js');
 // Initilise RTM and Web clients
 const rtm = new RTMClient(SLACKTOKEN);
 const web = new WebClient(SLACKTOKEN);
-console.log('hello')
 
 // Connect to Slack
 (async () => {

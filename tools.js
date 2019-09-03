@@ -71,7 +71,7 @@ function addUser(event, client) {
 		json: true
 	};
 	rp(options).then(function (body) {
-		client.sendMessage('user added', client.channel);
+		client.sendMessage('user added', event.channel);
 	})
 }
 
