@@ -7,11 +7,13 @@ const handle = require('./handle.js');
 // Initilise RTM and Web clients
 const rtm = new RTMClient(SLACKTOKEN);
 const web = new WebClient(SLACKTOKEN);
+console.log('hello')
 
 // Connect to Slack
 (async () => {
 	const { self, team } = await rtm.start();
 })();
+
 
 rtm.on('message', function (event) {
 	if (event.type !== 'message') return;
@@ -25,5 +27,9 @@ rtm.on('reaction_added', function(event){
 
 rtm.on('error', (err) => {
 	handle.error(err, rtm, web)
+})
+
+rtm.on('block_payloads', function(event) {
+	console.log('bloack payload detected');
 })
 

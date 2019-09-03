@@ -26,7 +26,7 @@ function handleMessage(event, rtm, web) {
 			tools.getSkillsOfUser(event, rtm, message.replace('what skills does', '').trim().substr(2, 9));
 			break;
 		case message.includes('test'):
-			tools.testHandler(event, rtm, web);
+			tools.test(event, rtm, web);
 			break;
 	}
 }
