@@ -6,24 +6,23 @@ var request = require('request');
 var rp = require('request-promise');
 
 const bot = new slackbot({
-	//token:'xoxb-492283298757-560422684000-rHtbsYu12uBmzFPJJdh3V92C',
 	token:SLACKTOKEN,
 	name:'skillbot'
 });
 
-
 bot.on('start', () => {
+	var now = new Date();
 	const params = {
 		icon_emoji: ':flag-england:'
 	}
-
-	bot.postMessageToChannel('general', 'bot on', params);
+	//bot.postMessageToChannel('general', 'bot on', params);
+	console.log(`Bot started @ ${now.toString()}`);
 });
 
 bot.on('error', (err) => console.log(err));
 
 bot.on('message', (data) => {
-	if(data.type !== 'message'){
+	if(data.user == bot.user_id || data.type !== 'message' ){
 		return
 	}
 	handleMessage(data);
@@ -31,25 +30,28 @@ bot.on('message', (data) => {
 
 function handleMessage(data){
 	var message = data.text;
+
 	if(message.includes('add skill:')){
-		addskill(message);
+		addskill(data);
 	} else if(message.includes('list my skills')) {
-		getUserSkills(data.user);
+		getUserSkills(data);
 	} else if(message.includes('list all skills')){
-		listSkills();
+		listSkills(data);
 	} else if(message.includes('add me')){
 		addUser(data);
 	} else if(message.includes('I have learned ')){
-		addUserSkill(data)
+		addUserSkill(data);
 	} else if(message.includes('help')){
-		bot.postMessageToChannel('general', 'soz no can do');
+		respond(data.channel, 'soz no can do');
 	} else if(message.includes('what skills does')){
 		getUserSkills(message.replace('what skills does','').trim().substr(2,9));
 	}
 }
 
 function addskill(data){
-	var skill = data.replace('add skill:','').trim();
+	var message = data.text;
+	var skill = message.replace('add skill:','').trim();
+	
 	var options = {
 		method: 'POST',
 		uri: 'https://igotskillz.herokuapp.com/skill',
@@ -59,11 +61,11 @@ function addskill(data){
 		json: true
 	};
 	rp(options).then(function(body){
-		bot.postMessageToChannel('general', 'skill added');
+		respond(data.channel, `Skill added: ${skill}`);
 	});
 }
 
-function listSkills(){
+function listSkills(data){
 	rp('https://igotskillz.herokuapp.com/allskillz')
 	.then(function(body){
 		const skills = JSON.parse(body);
@@ -74,7 +76,7 @@ function listSkills(){
 			skillsArray.push(obj.name);
 		}
 
-		bot.postMessageToChannel('general', `${skillsArray}`);
+		respond(data.channel, `*Current skills* \n ${skillsArray}`);
 	});
 }
 
@@ -89,16 +91,15 @@ function addUser(data){
 		json: true
 	};
 	rp(options).then(function(body){
-		bot.postMessageToChannel('general', 'user added');
+		respond(data.channel, `User has been added`);
 	})
 }
 
 function addUserSkill(data){
-
 	rp('https://igotskillz.herokuapp.com/skillbyname/' + data.text.replace('I have learned','').trim()).then(function(getSkillBody){
 		skillBody = JSON.parse(getSkillBody);
 		if(skillBody.skill === null){
-			bot.postMessageToChannel('general', 'This skill does not exist please add it seperately');
+			respond(data.channel, 'This skill does not exist please add it seperately');
 			return;
 		}
 		var options = {
@@ -111,13 +112,13 @@ function addUserSkill(data){
 			json: true
 		};
 		rp(options).then(function(body){
-			bot.postMessageToChannel('general', 'You have learned a new skill');
+			respond(data.channel, 'You have learned a new skill');
 		})
 	})
 }
 
-function getUserSkills(user){
-	rp('https://igotskillz.herokuapp.com/skillsbyuzer/' + user).then(function(getUserSkillBody){
+function getUserSkills(data){
+	rp('https://igotskillz.herokuapp.com/skillsbyuzer/' + data.user).then(function(getUserSkillBody){
 		const skills = JSON.parse(getUserSkillBody);
 		const skillsArray = [];
 
@@ -126,6 +127,10 @@ function getUserSkills(user){
 
 			skillsArray.push(obj);
 		}
-		bot.postMessageToChannel('general', `${skillsArray}`);
+		respond(data.channel, `${skillsArray}`);
 	})
+}
+
+function respond(channel,message){
+	bot.postMessage(channel, message);
 }
