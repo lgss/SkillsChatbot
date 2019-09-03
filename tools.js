@@ -42,7 +42,7 @@ function getSkills(event,client) {
 		});
 }
 
-function getSkillsOfUser(client, user) {
+function getSkillsOfUser(event, client, user) {
 	rp(`${SDB}/skillsbyuzer/` + user).then(function (getUserSkillBody) {
 		const skills = JSON.parse(getUserSkillBody);
 		const skillsArray = [];
