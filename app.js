@@ -13,7 +13,6 @@ const web = new WebClient(SLACKTOKEN);
 	const { self, team } = await rtm.start();
 })();
 
-
 rtm.on('message', function (event) {
 	if (event.type !== 'message') return;
 	if (event.bot_id) return;
@@ -31,4 +30,3 @@ rtm.on('error', (err) => {
 rtm.on('block_payloads', function(event) {
 	console.log('bloack payload detected');
 })
-
