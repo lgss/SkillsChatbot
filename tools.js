@@ -19,7 +19,6 @@ function addSkill(event, client) {
 }
 
 function getSkills(event,client) {
-	console.log("get skills");
 	rp(`${SDB}/allskillz`)
 		.then(function (body) {
 			const skills = JSON.parse(body);
@@ -133,7 +132,6 @@ async function test(event, rtm, web) {
 			],
 			channel: event.channel,
 		});
-		console.log('Message sent successfully', result.ts);
 	} catch (error) {
 		console.log('An error occurred', error);
 	}
