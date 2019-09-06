@@ -11,11 +11,14 @@ const web = new WebClient(SLACKTOKEN);
 // Connect to Slack
 (async () => {
 	const { self, team } = await rtm.start();
+	// const server = await ev.start(port);
+	// console.log(`Listening for events on ${server.address().port}`);
 })();
 
 rtm.on('message', function (event) {
 	if (event.type !== 'message') return;
 	if (event.bot_id) return;
+	if (!event.text.startsWith(`<@${this.activeUserId}>`)) return;
 	handle.message(event, this, web);
 });
 
