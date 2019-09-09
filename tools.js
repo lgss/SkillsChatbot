@@ -4,7 +4,7 @@ var request = require('request');
 var rp = require('request-promise');
 
 function addSkill(event, client) {
-	var skill = event.text.replace('add skill:', '').trim();
+	var skill = event.text.replace(`<@${client.activeUserId}> add skill:`, '').trim();
 	var options = {
 		method: 'POST',
 		uri: `${SDB}/skill`,
@@ -15,6 +15,8 @@ function addSkill(event, client) {
 	};
 	rp(options).then(function (body) {
 		client.sendMessage('skill added', event.channel);
+	}).catch(function(err){
+		client.sendMessage(err.error.error, event.channel);
 	});
 }
 
@@ -56,6 +58,8 @@ function getSkillsOfUser(event, client, user) {
 			skillsArray.push(obj);
 		}
 		client.sendMessage(`${skillsArray}`,event.channel);
+	}).catch((err) => {
+		console.log(err);
 	})
 }
 
@@ -70,7 +74,6 @@ function addUser(event, client) {
 		json: true
 	};
 	rp(options).then(function (body) {
-		console.log(body);
 		client.sendMessage('user added', event.channel);
 	})
 }
@@ -95,7 +98,6 @@ function addUserSkill(event, client) {
 		rp(options).then(function (body) {
 			client.sendMessage('You have learned a new skill', event.channel);
 		}).catch(function(err){
-			console.log(err.error.error);
 			client.sendMessage(err.error.error, event.channel);
 		})
 	})
