@@ -70,6 +70,7 @@ function addUser(event, client) {
 		json: true
 	};
 	rp(options).then(function (body) {
+		console.log(body);
 		client.sendMessage('user added', event.channel);
 	})
 }
@@ -93,6 +94,9 @@ function addUserSkill(event, client) {
 		};
 		rp(options).then(function (body) {
 			client.sendMessage('You have learned a new skill', event.channel);
+		}).catch(function(err){
+			console.log(err.error.error);
+			client.sendMessage(err.error.error, event.channel);
 		})
 	})
 }
