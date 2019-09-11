@@ -53,7 +53,7 @@ function getSkillsOfUser(event, client, user) {
 		}
 
 		for (var i = 0; i < skills.length; i++) {
-			var obj = skills[i];
+			var obj = skills[i].skill;
 
 			skillsArray.push(obj);
 		}
@@ -80,7 +80,7 @@ function addUser(event, client) {
 
 function addUserSkill(event, client) {
 
-	rp(`${SDB}/skillbyname/` + event.text.replace('I have learned', '').trim()).then(function (getSkillBody) {
+	rp(`${SDB}/skillbyname/` + event.text.replace(`<@${client.activeUserId}> I have learned`, '').trim()).then(function (getSkillBody) {
 		skillBody = JSON.parse(getSkillBody);
 		if (skillBody.skill === null) {
 			client.sendMessage('This skill does not exist please add it seperately', event.channel);
@@ -147,6 +147,64 @@ async function help(event, rtm, web) {
     rtm.sendMessage('There is no help here, only sadness', event.channel);
 }
 
+function listDeleteSkill(event, client, user, web){
+	rp(`${SDB}/skillsbyuzer/` + user).then(function (getUserSkillBody) {
+		const skills = JSON.parse(getUserSkillBody);
+		const skillsArray = [];
+		if (skills.length == 0) {
+			client.sendMessage(`No skills found`, event.channel);
+			return;
+		}
+
+		for (var i = 0; i < skills.length; i++) {
+			var obj = skills[i];
+
+			skillsArray.push(obj);
+		}
+		var blockSkillsForDelete=[];
+		for(var x = 0; x < skillsArray.length; x++){
+			console.log(x)
+			blockSkillsForDelete.push(	{
+				"type": "divider"
+			},
+			{
+				"type": "section",
+				"text": {
+					"type": "mrkdwn",
+					"text": skillsArray[x].skill
+				},
+				"accessory": {
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "Delete this skill",
+						"emoji": true
+					},
+					"value": skillsArray[x].skillId
+				}
+			});
+		}
+		web.chat.postMessage({callback_id:"test", blocks:blockSkillsForDelete,channel: event.channel});
+	}).catch((err) => {
+		console.log(err);
+	})
+}
+
+function deleteSkill(skillId, slackId){
+	var options = {
+		method: 'POST',
+		uri: `${SDB}/removeuzerskill`,
+		body: {
+			slackId: slackId,
+			skillId: skillId
+		},
+		json: true
+	};
+	rp(options).then(function (body) {
+
+	})
+}
+
 module.exports= {
     addSkill:           addSkill,
     getSkills:          getSkills,
@@ -154,5 +212,7 @@ module.exports= {
     addUser:            addUser,
     addUserSkill:       addUserSkill,
     test:               test,
-    help:               help
+	help:               help,
+	listDeleteSkill:	listDeleteSkill,
+	deleteSkill:		deleteSkill
 };
