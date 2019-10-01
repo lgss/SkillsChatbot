@@ -2,6 +2,7 @@ require('dotenv').config();
 const SDB = process.env.SKILLSDATABASE
 var request = require('request');
 var rp = require('request-promise');
+var async = require("async");
 
 function addSkill(event, client) {
 	var skill = event.text.replace(`<@${client.activeUserId}> add skill:`, '').trim();
@@ -147,7 +148,7 @@ async function help(event, rtm, web) {
     rtm.sendMessage('There is no help here, only sadness', event.channel);
 }
 
-function listDeleteSkill(event, client, user, web){
+async function listDeleteSkill(event, client, user, web){
 	rp(`${SDB}/skillsbyuzer/` + user).then(function (getUserSkillBody) {
 		const skills = JSON.parse(getUserSkillBody);
 		const skillsArray = [];
@@ -205,6 +206,28 @@ function deleteSkill(skillId, slackId){
 	})
 }
 
+function getUsersBySkill(event, client){
+	rp(`${SDB}/skillbyname/html`).then(function(getSkillBody){
+		var skillBody = JSON.parse(getSkillBody);
+		console.log(skillBody);
+		if (skillBody.skill === null) {
+			client.sendMessage('This skill doesnt exist', event.channel);
+			return;
+		}
+		rp(`${SDB}/getusersbyskill/` + skillBody.skill._id).then(function(usersBody){
+			console.log(usersBody)
+			var users = JSON.parse(usersBody);
+			var userArray=[];
+			for (let i = 0; i < users.length; i++) {
+				userArray.push(`<@${users[i]}>`);
+			}
+			console.log(userArray);
+			client.sendMessage(`${userArray}` ,event.channel);
+		})
+	})
+		
+}
+
 module.exports= {
     addSkill:           addSkill,
     getSkills:          getSkills,
@@ -214,5 +237,6 @@ module.exports= {
     test:               test,
 	help:               help,
 	listDeleteSkill:	listDeleteSkill,
-	deleteSkill:		deleteSkill
+	deleteSkill:		deleteSkill,
+	getUsersBySkill:	getUsersBySkill
 };

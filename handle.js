@@ -31,6 +31,9 @@ function handleMessage(event, rtm, web) {
 		case message.includes('delete'):
 			tools.listDeleteSkill(event, rtm, event.user, web);
 			break;
+		case message.includes('who knows'):
+			tools.getUsersBySkill(event, rtm);
+			break;
 	}
 }
 
