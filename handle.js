@@ -23,7 +23,7 @@ function handleMessage(event, rtm, web) {
 			tools.help(event, rtm, web)
 			break;
 		case message.includes('what skills does'):
-			tools.getSkillsOfUser(event, rtm, web, message.replace('what skills does', '').trim().substr(2, 9));
+			tools.getSkillsOfUser(event, rtm, message.replace(`<@${rtm.activeUserId}> what skills does`, '').trim().substr(2, 9));
 			break;
 		case message.includes('test'):
 			tools.test(event, rtm, web);
