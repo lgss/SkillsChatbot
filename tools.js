@@ -207,11 +207,11 @@ function deleteSkill(skillId, slackId){
 }
 
 function getUsersBySkill(event, client){
-	rp(`${SDB}/skillbyname/html`).then(function(getSkillBody){
+	rp(`${SDB}/skillbyname/${event.text.replace(`<@${client.activeUserId}> who knows`, '').trim()}`).then(function(getSkillBody){
 		var skillBody = JSON.parse(getSkillBody);
 		if (skillBody.skill === null) {
-			client.sendMessage('This skill doesnt exist', event.channel);
-			return;
+			return client.sendMessage('This skill doesnt exist', event.channel);
+			
 		}
 		rp(`${SDB}/getusersbyskill/` + skillBody.skill._id).then(function(usersBody){
 			var users = JSON.parse(usersBody);
