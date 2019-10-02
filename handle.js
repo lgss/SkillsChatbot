@@ -4,7 +4,7 @@ function handleMessage(event, rtm, web) {
 	var message = event.text;
 	switch (true) {
 		default: break;
-		case message.includes('add skill'):
+		case message.includes('add skill:'):
 			tools.addSkill(event, rtm);
 			break;
 		case message.includes('list my skills'):
