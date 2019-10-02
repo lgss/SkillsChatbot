@@ -165,7 +165,6 @@ async function listDeleteSkill(event, client, user, web){
 		}
 		var blockSkillsForDelete=[];
 		for(var x = 0; x < skillsArray.length; x++){
-			console.log(x)
 			blockSkillsForDelete.push(	{
 				"type": "divider"
 			},
@@ -210,19 +209,16 @@ function deleteSkill(skillId, slackId){
 function getUsersBySkill(event, client){
 	rp(`${SDB}/skillbyname/html`).then(function(getSkillBody){
 		var skillBody = JSON.parse(getSkillBody);
-		console.log(skillBody);
 		if (skillBody.skill === null) {
 			client.sendMessage('This skill doesnt exist', event.channel);
 			return;
 		}
 		rp(`${SDB}/getusersbyskill/` + skillBody.skill._id).then(function(usersBody){
-			console.log(usersBody)
 			var users = JSON.parse(usersBody);
 			var userArray=[];
 			for (let i = 0; i < users.length; i++) {
 				userArray.push(`<@${users[i]}>`);
 			}
-			console.log(userArray);
 			client.sendMessage(`${userArray}` ,event.channel);
 		})
 	})
