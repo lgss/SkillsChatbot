@@ -69,13 +69,14 @@ function addUser(event, client) {
 		method: 'POST',
 		uri: `${SDB}/uzer`,
 		body: {
-			slackId: event.user,
-			name: event.user
+			slackId: event.user
 		},
 		json: true
 	};
 	rp(options).then(function (body) {
 		client.sendMessage('user added', event.channel);
+	}).catch((err)=> {
+		client.sendMessage(err.error.error, event.channel);
 	})
 }
 
