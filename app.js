@@ -16,6 +16,7 @@ const web = new WebClient(SLACKTOKEN);
 })();
 
 rtm.on('message', function (event) {
+	if (event.subtype == 'message_changed') return;
 	if (event.type !== 'message') return;
 	if (event.bot_id) return;
 	if (!event.text.startsWith(`<@${this.activeUserId}>`)) return;
