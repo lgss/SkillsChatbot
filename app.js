@@ -43,6 +43,6 @@ server.post('/receivemessage',function(req, res, next){
 	res.send(200,"ok");
 });
 
-server.listen(4390, function() {
+server.listen(process.env.PORT || 4390, function() {
 	console.log('%s listening at %s', server.name, server.url);
 });
