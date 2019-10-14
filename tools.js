@@ -146,7 +146,106 @@ async function test(event, rtm, web) {
 }
 
 async function help(event, rtm, web) {
-    rtm.sendMessage('There is no help here, only sadness', event.channel);
+    try {
+		const result = await web.chat.postMessage({
+			blocks: [
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To add a new skill enter - @Skillbot add skill: {skill}",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To add yourself enter - @Skillbot add me",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To add a new skill to yourself enter - @Skillbot I have learned {skill}. The skill needs to already be added before you can learn it",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To find out who knows a skill enter - @Skillbot who knows {skill}.",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To find out what somebody else knows enter - @Skillbot what does @person know.",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To find out what you know enter - @Skillbot list my skills",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To delete a skill enter - @Skillbot delete",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				},
+				{
+					"type": "section",
+					"text": {
+						"type": "plain_text",
+						"text": "To add list all skills enter - @Skillbot list all skills",
+						"emoji": true
+					}
+				},
+				{
+					"type": "divider"
+				}
+			],
+			channel: event.channel,
+		});
+	} catch (error) {
+		console.log('An error occurred', error);
+	}
 }
 
 async function listDeleteSkill(event, client, user, web){
