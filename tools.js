@@ -121,6 +121,14 @@ function addUserSkill(event, client, web) {
 
 				var blockSkillsForDelete=[];
 
+				blockSkillsForDelete.push({
+						"type": "section",
+						"text": {
+							"type": "mrkdwn",
+							"text": "*We couldn't find a skill with that name so maybe try and add one of these?*"
+						}
+					});
+
 				for(var x = 0; x < skillsArray.length; x++){
 					blockSkillsForDelete.push(	{
 						"type": "divider"
