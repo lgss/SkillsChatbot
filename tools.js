@@ -2,7 +2,7 @@ require('dotenv').config();
 const SDB = process.env.SKILLSDATABASE
 var request = require('request');
 var rp = require('request-promise');
-var async = require("async");
+//var async = require("async");
 
 function addSkill(event, client) {
 	var skill = event.text.replace(`<@${client.activeUserId}> add skill:`, '').trim();
@@ -82,11 +82,10 @@ function addUser(event, client) {
 
 function addUserSkill(event, client) {
 
-	rp(`${SDB}/skillbyname/` + event.text.replace(`<@${client.activeUserId}> I have learned`, '').trim()).then(function (getSkillBody) {
+	rp(`${SDB}/skillbyname/` + event.text.replace(`<@${client.activeUserId}> I have learned`, '').trim())
+	.then(function (getSkillBody) {
 		skillBody = JSON.parse(getSkillBody);
 		if (skillBody.skill === null) {
-			client.sendMessage('This skill does not exist please add it seperately', event.channel);
-			return;
 		}
 		var options = {
 			method: 'POST',
@@ -102,6 +101,12 @@ function addUserSkill(event, client) {
 		}).catch(function(err){
 			client.sendMessage(err.error.error, event.channel);
 		})
+	}).catch(err => {
+		if (err.statusCode == 404) {
+			client.sendMessage('This skill does not exist please add it seperately', event.channel);
+			return;
+		}
+		throw(err)
 	})
 }
 
