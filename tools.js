@@ -120,7 +120,7 @@ function addUserSkill(event, client, web) {
 				}
 
 				var blockSkillsForDelete=[];
-				
+
 				for(var x = 0; x < skillsArray.length; x++){
 					blockSkillsForDelete.push(	{
 						"type": "divider"
@@ -138,11 +138,12 @@ function addUserSkill(event, client, web) {
 								"text": "Add this skill",
 								"emoji": true
 							},
-							"value": skillsArray[x]._Id
+							"action_id":"add",
+							"value": skillsArray[x]._id
 						}
 					});
 				}
-				web.chat.postMessage({callback_id:"test", blocks:blockSkillsForDelete,channel: event.channel});
+				web.chat.postMessage({callback_id:"add_skill", blocks:blockSkillsForDelete,channel: event.channel});
 			}).catch((err) => {
 				console.log(err);
 			});
@@ -327,7 +328,8 @@ async function listDeleteSkill(event, client, user, web){
 						"text": "Delete this skill",
 						"emoji": true
 					},
-					"value": skillsArray[x].skillId
+					"value": skillsArray[x].skillId,
+					"action_id":"delete"
 				}
 			});
 		}
@@ -349,7 +351,26 @@ function deleteSkill(skillId, slackId){
 	};
 	rp(options).then(function (body) {
 
-	})
+	}).catch(err => {
+		console.log(err);
+	});
+}
+
+function actionAddSkill(skillId,slackId){
+	var options = {
+		method: 'POST',
+		uri: `${SDB}/uzerskill`,
+		body: {
+			slackId: slackId,
+			skillId: skillId
+		},
+		json: true
+	};
+	rp(options).then(function(body){
+
+	}).catch(err => {
+		console.log(err);
+	});
 }
 
 function getUsersBySkill(event, client){
@@ -381,5 +402,6 @@ module.exports= {
 	help:               help,
 	listDeleteSkill:	listDeleteSkill,
 	deleteSkill:		deleteSkill,
-	getUsersBySkill:	getUsersBySkill
+	getUsersBySkill:	getUsersBySkill,
+	actionAddSkill:		actionAddSkill
 };
