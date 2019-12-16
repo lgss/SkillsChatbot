@@ -80,7 +80,7 @@ function addUser(event, client) {
 	})
 }
 
-function addUserSkill(event, client) {
+function addUserSkill(event, client, web) {
 
 	rp(`${SDB}/skillbyname/` + event.text.replace(`<@${client.activeUserId}> I have learned`, '').trim())
 	.then(function (getSkillBody) {
@@ -103,10 +103,52 @@ function addUserSkill(event, client) {
 		})
 	}).catch(err => {
 		if (err.statusCode == 404) {
-			client.sendMessage('This skill does not exist please add it seperately', event.channel);
+			//client.sendMessage('This skill does not exist please add it seperately', event.channel);
+			rp(`${SDB}/searchskill/` + event.text.replace(`<@${client.activeUserId}> I have learned`, '').trim())
+			.then(function(searchSkillBody){
+				const skills = JSON.parse(searchSkillBody);
+				const skillsArray = [];
+				if (skills.length == 0) {
+					client.sendMessage(`No skills found`, event.channel);
+					return;
+				}
+
+				for (var i = 0; i < skills.length; i++) {
+					var obj = skills[i];
+
+					skillsArray.push(obj);
+				}
+
+				var blockSkillsForDelete=[];
+				
+				for(var x = 0; x < skillsArray.length; x++){
+					blockSkillsForDelete.push(	{
+						"type": "divider"
+					},
+					{
+						"type": "section",
+						"text": {
+							"type": "mrkdwn",
+							"text": skillsArray[x].name
+						},
+						"accessory": {
+							"type": "button",
+							"text": {
+								"type": "plain_text",
+								"text": "Add this skill",
+								"emoji": true
+							},
+							"value": skillsArray[x]._Id
+						}
+					});
+				}
+				web.chat.postMessage({callback_id:"test", blocks:blockSkillsForDelete,channel: event.channel});
+			}).catch((err) => {
+				console.log(err);
+			});
 			return;
 		}
-		throw(err)
+		throw(err);
 	})
 }
 

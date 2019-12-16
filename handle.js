@@ -17,7 +17,7 @@ function handleMessage(event, rtm, web) {
 			tools.addUser(event, rtm);
 			break;
 		case message.includes('I have learned '):
-			tools.addUserSkill(event, rtm)
+			tools.addUserSkill(event, rtm, web)
 			break;
 		case message.includes('help'):
 			tools.help(event, rtm, web)
