@@ -80,7 +80,7 @@ function addUser(event, client) {
 	})
 }
 
-function addUserSkill(event, client) {
+function addUserSkill(event, client, web) {
 
 	rp(`${SDB}/skillbyname/` + event.text.replace(`<@${client.activeUserId}> I have learned`, '').trim())
 	.then(function (getSkillBody) {
@@ -103,10 +103,61 @@ function addUserSkill(event, client) {
 		})
 	}).catch(err => {
 		if (err.statusCode == 404) {
-			client.sendMessage('This skill does not exist please add it seperately', event.channel);
+			//client.sendMessage('This skill does not exist please add it seperately', event.channel);
+			rp(`${SDB}/searchskill/` + event.text.replace(`<@${client.activeUserId}> I have learned`, '').trim())
+			.then(function(searchSkillBody){
+				const skills = JSON.parse(searchSkillBody);
+				const skillsArray = [];
+				if (skills.length == 0) {
+					client.sendMessage(`No skills found`, event.channel);
+					return;
+				}
+
+				for (var i = 0; i < skills.length; i++) {
+					var obj = skills[i];
+
+					skillsArray.push(obj);
+				}
+
+				var blockSkillsForDelete=[];
+
+				blockSkillsForDelete.push({
+						"type": "section",
+						"text": {
+							"type": "mrkdwn",
+							"text": "*We couldn't find a skill with that name so maybe try and add one of these?*"
+						}
+					});
+
+				for(var x = 0; x < skillsArray.length; x++){
+					blockSkillsForDelete.push(	{
+						"type": "divider"
+					},
+					{
+						"type": "section",
+						"text": {
+							"type": "mrkdwn",
+							"text": skillsArray[x].name
+						},
+						"accessory": {
+							"type": "button",
+							"text": {
+								"type": "plain_text",
+								"text": "Add this skill",
+								"emoji": true
+							},
+							"action_id":"add",
+							"value": skillsArray[x]._id
+						}
+					});
+				}
+				web.chat.postMessage({callback_id:"add_skill", blocks:blockSkillsForDelete,channel: event.channel});
+			}).catch((err) => {
+				console.log(err);
+			});
 			return;
 		}
-		throw(err)
+		throw(err);
 	})
 }
 
@@ -285,7 +336,8 @@ async function listDeleteSkill(event, client, user, web){
 						"text": "Delete this skill",
 						"emoji": true
 					},
-					"value": skillsArray[x].skillId
+					"value": skillsArray[x].skillId,
+					"action_id":"delete"
 				}
 			});
 		}
@@ -307,7 +359,26 @@ function deleteSkill(skillId, slackId){
 	};
 	rp(options).then(function (body) {
 
-	})
+	}).catch(err => {
+		console.log(err);
+	});
+}
+
+function actionAddSkill(skillId,slackId){
+	var options = {
+		method: 'POST',
+		uri: `${SDB}/uzerskill`,
+		body: {
+			slackId: slackId,
+			skillId: skillId
+		},
+		json: true
+	};
+	rp(options).then(function(body){
+
+	}).catch(err => {
+		console.log(err);
+	});
 }
 
 function getUsersBySkill(event, client){
@@ -339,5 +410,6 @@ module.exports= {
 	help:               help,
 	listDeleteSkill:	listDeleteSkill,
 	deleteSkill:		deleteSkill,
-	getUsersBySkill:	getUsersBySkill
+	getUsersBySkill:	getUsersBySkill,
+	actionAddSkill:		actionAddSkill
 };

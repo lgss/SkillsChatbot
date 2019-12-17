@@ -33,4 +33,4 @@ rtm.on('error', (err) => {
 
 rtm.on('block_payloads', function(event) {
 	console.log('bloack payload detected');
-})
+});
