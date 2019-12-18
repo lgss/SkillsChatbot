@@ -395,6 +395,9 @@ function getUsersBySkill(event, client){
 				userArray.push(`<@${users[i]}>`);
 			}
 			client.sendMessage(`${userArray}` ,event.channel);
+		}).catch(err => {
+			client.sendMessage(JSON.parse(err.error).error ,event.channel);
+
 		})
 	})
 		
