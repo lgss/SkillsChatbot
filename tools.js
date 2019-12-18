@@ -34,7 +34,7 @@ function getSkills(event,client) {
 
 			for (var i = 0; i < skills.length; i++) {
 				var obj = skills[i];
-				skillsArray.push(obj.name);
+				skillsArray.push(" " + obj.name);
 			}
 
 			client.sendMessage(`${skillsArray}`, event.channel);
@@ -56,7 +56,7 @@ function getSkillsOfUser(event, client, user) {
 		for (var i = 0; i < skills.length; i++) {
 			var obj = skills[i].skill;
 
-			skillsArray.push(obj);
+			skillsArray.push(" " + obj);
 		}
 		client.sendMessage(`${skillsArray}`,event.channel);
 	}).catch((err) => {
